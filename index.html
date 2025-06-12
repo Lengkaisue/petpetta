@@ -3,39 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Petpetta 首頁</title>
-  <link rel="stylesheet" href="assets/styles.css" />
-  <link rel="icon" href="favicon.ico" />
+  <title>Petpetta 寵物生活館</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #fffaf5 url('https://cdn.pixabay.com/photo/2016/04/01/09/11/paw-1300293_960_720.png') repeat;
+      background-size: 80px;
+    }
+
+    nav {
+      background: #ffc3c3;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav h1 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.8rem;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 1rem;
+      font-weight: bold;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ffe1e1, #fce3d4);
+      text-align: center;
+      padding: 3rem 1rem;
+      position: relative;
+    }
+
+    header img {
+      width: 200px;
+      position: absolute;
+      right: 10%;
+      top: 30px;
+    }
+
+    header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    .section {
+      padding: 3rem 1.5rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .section h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #444;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product {
+      background: #fff;
+      border-radius: 20px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .product img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .product h4 {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .product p {
+      color: #f08a8a;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #fdd;
+      color: #444;
+    }
+
+    @media (max-width: 600px) {
+      header img {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <nav>
+    <h1>Petpetta</h1>
+    <div>
+      <a href="#">首頁</a>
+      <a href="#">商品</a>
+      <a href="#">購物車</a>
+      <a href="#">登入</a>
+    </div>
+  </nav>
+
   <header>
-    <h1><img src="assets/logo-light.png" alt="Petpetta Logo" height="40"> Petpetta</h1>
-    <nav>
-      <a href="index.html" class="active">首頁</a>
-      <a href="products.html">商品</a>
-      <a href="cart.html">購物車</a>
-      <a href="login.html">會員</a>
-    </nav>
+    <h2>給毛孩最溫暖的生活</h2>
+    <p>從玩具、衣物到配件，Petpetta 一次給你最可愛的選擇。</p>
+    <img src="https://cdn.pixabay.com/photo/2021/04/03/00/55/dog-6146192_1280.png" alt="狗狗插圖">
   </header>
 
-  <section class="hero">
-    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="可愛寵物插圖" />
-    <h2>歡迎來到 Petpetta 🐾</h2>
-    <p>這裡有最可愛的寵物衣著與玩具，陪伴你家毛孩的每一天！</p>
-    <a href="products.html" class="btn">趕快來搶</a>
+  <section class="section">
+    <h3>🐾 熱門商品推薦</h3>
+    <div class="product-grid">
+      <div class="product">
+        <img src="https://cdn.pixabay.com/photo/2017/01/31/19/14/dog-2029214_1280.png" alt="狗玩具">
+        <h4>狗狗玩具球</h4>
+        <p>$199</p>
+      </div>
+      <div class="product">
+        <img src="https://cdn.pixabay.com/photo/2018/04/10/19/57/cat-3307771_1280.png" alt="貓跳台">
+        <h4>貓跳台</h4>
+        <p>$599</p>
+      </div>
+      <div class="product">
+        <img src="https://cdn.pixabay.com/photo/2021/01/16/18/44/pet-5922074_1280.jpg" alt="寵物衣服">
+        <h4>毛孩造型衣</h4>
+        <p>$399</p>
+      </div>
+    </div>
   </section>
 
-  <section class="news">
-    <h3>最新消息</h3>
+  <section class="section">
+    <h3>📢 最新消息</h3>
     <ul>
-      <li>🎉 全館限時免運中！</li>
-      <li>🐶 新品上架：夏季寵物涼感背心</li>
-      <li>📦 滿千折百，立即下單！</li>
+      <li>🐶 新品上架！狗狗系列新品登場～</li>
+      <li>🎉 滿千免運限時活動進行中！</li>
+      <li>🛍️ 會員專屬 95 折優惠正式啟動！</li>
     </ul>
   </section>
 
   <footer>
-    <p>&copy; 2025 Petpetta 寵物生活館</p>
+    © 2025 Petpetta 寵物生活館｜陪你與毛孩一起成長 ❤️
   </footer>
+
 </body>
 </html>

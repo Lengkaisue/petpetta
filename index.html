@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Petpetta 首頁</title>
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="favicon.ico" />
@@ -10,26 +10,29 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #fff8e1, #ffe0b2);
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
     }
     header {
-      background-color: #f8c291;
-      padding: 1rem 2rem;
+      background-color: #fff;
+      padding: 1rem 2rem 0.5rem;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .logo-nav {
+      width: 100%;
+      display: flex;
       justify-content: space-between;
-    }
-    header h1 {
-      font-size: 1.5rem;
-      display: flex;
       align-items: center;
-      gap: 0.5rem;
     }
-    header h1 img {
+    .logo-nav img {
       height: 36px;
     }
+    nav {
+      margin-top: 0.5rem;
+    }
     nav a {
-      margin: 0 1rem;
+      margin: 0 1rem 0 0;
       text-decoration: none;
       color: #5b341b;
       font-weight: bold;
@@ -40,62 +43,19 @@
     .hero {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
-      padding: 3rem 1rem;
-      background-color: #fff3e0;
+      padding: 2rem 1rem 3rem;
+      background-color: #fff8e1;
       background-image: url('https://cdn.pixabay.com/photo/2016/04/01/09/11/paw-1300299_1280.png');
       background-size: 120px;
       background-repeat: repeat;
     }
-    .hero-text {
-      max-width: 480px;
-    }
-    .hero-text h2 {
-      font-size: 2rem;
-      color: #d84315;
-    }
-    .hero-text p {
-      font-size: 1.2rem;
-      color: #5b341b;
-    }
-    .btn {
-      background: #ff8a65;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 30px;
-      font-size: 1rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 1rem;
-    }
-    .btn:hover {
-      background: #f4511e;
-    }
     .hero img {
-      width: 300px;
-      max-height: 260px;
-      object-fit: contain;
-      border-radius: 18px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .news {
-      background-color: #fffbe6;
-      padding: 2rem;
-    }
-    .news h3 {
-      margin-bottom: 1rem;
-      color: #ff7043;
-    }
-    .news ul {
-      list-style: none;
-      padding: 0;
-      color: #6d4c41;
-    }
-    .news li {
-      margin: 0.5rem 0;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
     footer {
       text-align: center;
@@ -107,34 +67,19 @@
 </head>
 <body>
   <header>
-    <h1>
+    <div class="logo-nav">
       <img src="assets/logo-light.png" alt="Petpetta Logo">
-      Petpetta
-    </h1>
+    </div>
     <nav>
       <a href="index.html" class="active">首頁</a>
-      <a href="products.html">商品</a>
-      <a href="cart.html">購物車</a>
+      <a href="products.html">商品列表</a>
       <a href="login.html">會員</a>
+      <a href="cart.html">購物車</a>
     </nav>
   </header>
 
   <section class="hero">
-    <div class="hero-text">
-      <h2>Petpetta 加油！🐾</h2>
-      <p>貓咪與狗狗的幸福天地，盡在 Petpetta！每天都有新驚喜～</p>
-      <a href="products.html" class="btn">趕快來搶</a>
-    </div>
-    <img src="assets/hero-girl-dog.png" alt="女生與法鬥插圖">
-  </section>
-
-  <section class="news">
-    <h3>📢 最新消息</h3>
-    <ul>
-      <li>🎉 全館不可能免運中！</li>
-      <li>🐶 夏日玩具新登場</li>
-      <li>📦 加入會員也不會享驚喜好禮</li>
-    </ul>
+    <img src="assets/hero-final-illustration.jpg" alt="Petpetta Hero 插圖">
   </section>
 
   <footer>

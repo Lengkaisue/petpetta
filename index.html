@@ -9,35 +9,27 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Noto Sans TC', 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
     }
     header {
       background-color: #fff;
       padding: 1rem 2rem 0.5rem;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .logo-nav {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
     }
-    .logo-nav img {
-      height: 36px;
+    .nav-links {
+      display: flex;
+      gap: 2rem;
     }
-    nav {
-      margin-top: 0.5rem;
-    }
-    nav a {
-      margin: 0 1rem 0 0;
+    .nav-links a {
       text-decoration: none;
       color: #5b341b;
       font-weight: bold;
+      font-size: 1.1rem;
     }
-    nav a:hover {
+    .nav-links a:hover {
       color: #d84315;
     }
     .hero {
@@ -67,18 +59,16 @@
 </head>
 <body>
   <header>
-     <div class="logo-nav">
-     <img src="assets/logo-light.png" alt="Petpetta Logo" style="height: 64px;" />
-
+    <div class="nav-links">
       <a href="index.html" class="active">首頁</a>
       <a href="products.html">商品列表</a>
       <a href="login.html">會員</a>
       <a href="cart.html">購物車</a>
-    </nav>
+    </div>
   </header>
 
   <section class="hero">
-    <img src="assets/hero-final-illustration616.png" alt="Petpetta Hero 圖" />
+    <img src="assets/hero-final-illustration.png" alt="Petpetta Hero 圖" />
   </section>
 
   <footer>

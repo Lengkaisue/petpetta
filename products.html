@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petpetta 商品列表</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #fff8e1, #ffe0b2);
+    }
+    header {
+      background-color: #fff;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    nav {
+      margin-top: 1rem;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #5b341b;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #d84315;
+    }
+    h1 {
+      text-align: center;
+      color: #d84315;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .product-card {
+      background: #fff3e0;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .product-card h3 {
+      margin: 0.5rem 0 0.2rem;
+      color: #5b341b;
+    }
+    .product-card p {
+      margin-bottom: 1rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6d4c41;
+      padding: 2rem 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Petpetta 商品列表</h1>
+    <nav>
+      <a href="index.html">首頁</a>
+      <a href="products.html" class="active">商品列表</a>
+      <a href="login.html">會員</a>
+      <a href="cart.html">購物車</a>
+    </nav>
+  </header>
+
+  <section class="product-grid">
+    <div class="product-card">
+      <img src="assets/小鴨.jpg" alt="黃色鴨鴨裝">
+      <h3>黃色鴨鴨裝</h3>
+      <p>分類：衣著 / 萌寶配件</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/披薩.jpg" alt="披薩玩具">
+      <h3>披薩玩具</h3>
+      <p>分類：玩具</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/蔥薑.jpg" alt="蔬菜寶盒玩具">
+      <h3>蔬菜寶盒玩具</h3>
+      <p>分類：玩具</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/薯條.jpg" alt="薯條帽+背帶組">
+      <h3>薯條帽+背帶組</h3>
+      <p>分類：衣著 / 牽繩 / 萌寶配件</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Petpetta 寵物生活館</p>
+  </footer>
+</body>
+</html>

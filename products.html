@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Petpetta 商品列表</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
   <style>
     body {
       margin: 0;
@@ -80,42 +78,31 @@
     </nav>
   </header>
 
-  <section class="product-grid" id="product-list">
-    <!-- 商品資料由 Firebase 載入 -->
+  <section class="product-grid">
+    <div class="product-card">
+      <img src="assets/小鴨.jpg" alt="黃色鴨鴨裝">
+      <h3>黃色鴨鴨裝</h3>
+      <p>分類：衣著 / 萌寶配件</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/披薩.jpg" alt="披薩玩具">
+      <h3>披薩玩具</h3>
+      <p>分類：玩具</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/蔥薑.jpg" alt="蔬菜寶盒玩具">
+      <h3>蔬菜寶盒玩具</h3>
+      <p>分類：玩具</p>
+    </div>
+    <div class="product-card">
+      <img src="assets/薯條.jpg" alt="薯條帽+背帶組">
+      <h3>薯條帽+背帶組</h3>
+      <p>分類：衣著 / 牽繩 / 萌寶配件</p>
+    </div>
   </section>
 
   <footer>
     <p>&copy; 2025 Petpetta 寵物生活館</p>
   </footer>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const productList = document.getElementById("product-list");
-
-    db.collection("products").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${data.imageUrl}" alt="${data.name}" />
-          <h3>${data.name}</h3>
-          <p>${data.category}</p>
-        `;
-        productList.appendChild(card);
-      });
-    });
-  </script>
 </body>
 </html>

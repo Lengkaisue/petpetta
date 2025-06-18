@@ -3,26 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petpetta 商品列表</title>
+  <title>Petpetta 首頁</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+  <link rel="icon" href="favicon.ico" />
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #fff8e1, #ffe0b2);
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
     }
     header {
       background-color: #fff;
-      padding: 1rem 2rem;
-      text-align: center;
+      padding: 1rem 2rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .logo-nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-nav img {
+      height: 36px;
     }
     nav {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
     nav a {
-      margin: 0 1rem;
+      margin: 0 1rem 0 0;
       text-decoration: none;
       color: #5b341b;
       font-weight: bold;
@@ -30,36 +40,22 @@
     nav a:hover {
       color: #d84315;
     }
-    h1 {
-      text-align: center;
-      color: #d84315;
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      background-color: #fff8e1;
+      background-image: url('https://cdn.pixabay.com/photo/2016/04/01/09/11/paw-1300299_1280.png');
+      background-size: 120px;
+      background-repeat: repeat;
     }
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
-      padding: 2rem;
-    }
-    .product-card {
-      background: #fff3e0;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
-      text-align: center;
-    }
-    .product-card img {
+    .hero img {
       width: 100%;
-      height: 220px;
-      object-fit: cover;
-    }
-    .product-card h3 {
-      margin: 0.5rem 0 0.2rem;
-      color: #5b341b;
-    }
-    .product-card p {
-      margin-bottom: 1rem;
-      color: #888;
-      font-size: 0.9rem;
+      max-width: 800px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
     footer {
       text-align: center;
@@ -71,51 +67,22 @@
 </head>
 <body>
   <header>
-    <h1>Petpetta 商品列表</h1>
-    <nav>
-      <a href="index.html">首頁</a>
-      <a href="products.html" class="active">商品列表</a>
+     <div class="logo-nav">
+       </nav>
+      <a href="index.html" class="active">首頁</a>
+      <a href="products.html">商品列表</a>
       <a href="login.html">會員</a>
       <a href="cart.html">購物車</a>
     </nav>
+   </div>
   </header>
 
-  <section class="product-grid" id="product-list">
-    <!-- 商品資料由 Firebase 載入 -->
+  <section class="hero">
+    <img src="assets/hero-final-illustration616.png" alt="Petpetta Hero 圖" />
   </section>
 
   <footer>
     <p>&copy; 2025 Petpetta 寵物生活館</p>
   </footer>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const productList = document.getElementById("product-list");
-
-    db.collection("products").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${data.imageUrl}" alt="${data.name}" />
-          <h3>${data.name}</h3>
-          <p>${data.category}</p>
-        `;
-        productList.appendChild(card);
-      });
-    });
-  </script>
 </body>
 </html>

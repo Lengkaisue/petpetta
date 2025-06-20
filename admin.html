@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>後台商品上架</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8e1;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #d84315;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #fff3e0;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      background: #d84315;
+      color: #fff;
+      padding: 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #bf360c;
+    }
+  </style>
+</head>
+<body>
+  <h1>上架新商品</h1>
+  <form id="productForm">
+    <input type="text" id="name" placeholder="商品名稱" required />
+    <input type="text" id="imageUrl" placeholder="圖片網址" required />
+    <input type="text" id="category" placeholder="分類（可多分類用 / 分隔）" required />
+    <input type="text" id="type" placeholder="系統分類（例如：toys, clothes）" required />
+    <button type="submit">上架商品</button>
+  </form>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const form = document.getElementById('productForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const imageUrl = document.getElementById('imageUrl').value;
+      const category = document.getElementById('category').value;
+      const type = document.getElementById('type').value;
+
+      try {
+        await db.collection('products').add({ name, imageUrl, category, type });
+        alert('商品已成功上架');
+        form.reset();
+      } catch (err) {
+        alert('錯誤：' + err);
+      }
+    });
+  </script>
+</body>
+</html>

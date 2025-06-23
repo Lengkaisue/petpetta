@@ -1,32 +1,116 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Petpetta 商品列表</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petpetta 商品專區</title>
+  <link rel="stylesheet" href="assets/styles.css" />
   <style>
-    /*（你的 CSS 依原版就好）*/
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #fff8e1, #ffe0b2);
+    }
+    header {
+      background-color: #fff;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    nav {
+      margin-top: 1rem;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #5b341b;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #d84315;
+    }
+    h1 {
+      text-align: center;
+      color: #d84315;
+      margin-top: 1rem;
+    }
+    .button-bar {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .button-bar a {
+      text-decoration: none;
+      padding: 0.4rem 1rem;
+      margin: 0.5rem;
+      background-color: #ffe0b2;
+      color: #5b341b;
+      border-radius: 20px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .button-bar a:hover {
+      background-color: #ffcc80;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .product-card {
+      background: #fff3e0;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .product-card h3 {
+      margin: 0.5rem 0 0.2rem;
+      color: #5b341b;
+    }
+    .product-card p {
+      margin-bottom: 1rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6d4c41;
+      padding: 2rem 1rem;
+    }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
-    <h1 id="page-title">Petpetta 商品分類</h1>
-    <nav><a href="index.html">回首頁</a></nav>
+    <h1 id="category-title">Petpetta | 商品專區</h1>
+    <nav>
+      <a href="index.html">回首頁</a>
+    </nav>
   </header>
 
-  <section id="button-bar">
-    <button onclick="switchCategory('dog')">🐶 狗狗專區</button>
-    <button onclick="switchCategory('cat')">🐱 貓咪專區</button>
+  <section class="button-bar">
+    <a href="products.html?type=dog">🐶 狗狗專區</a>
+    <a href="products.html?type=cat">🐱 貓咪專區</a>
+    <a href="products.html?type=toys">🧸 玩具</a>
+    <a href="products.html?type=clothes">👕 服飾</a>
   </section>
 
-  <section class="product-grid" id="product-list"></section>
+  <section class="product-grid" id="product-list">
+    <!-- 商品由 Firebase 動態載入 -->
+  </section>
 
-  <footer><p>&copy; 2025 Petpetta 寵物生活館</p></footer>
+  <footer>
+    <p>&copy; 2025 Petpetta 寵物生活館</p>
+  </footer>
 
-  <!-- ✅ 使用 compat CDN（不需 import） -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
@@ -36,45 +120,40 @@
       messagingSenderId: "1094013665549",
       appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function switchCategory(key) {
-      location.search = "?type=" + encodeURIComponent(key);
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get("type") || "dog";
+    document.getElementById("category-title").textContent = `Petpetta | ${type}`;
 
-    function loadProducts(category) {
-      document.getElementById("page-title").textContent = "Petpetta｜" + category;
-      const list = document.getElementById("product-list");
-      list.innerHTML = '';
+    const productList = document.getElementById("product-list");
 
-      db.collection("products").doc(category).collection("products").get()
-        .then(snapshot => {
-          if (snapshot.empty) {
-            list.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
-            return;
-          }
-          snapshot.forEach(doc => {
-            const d = doc.data();
-            list.insertAdjacentHTML('beforeend', `
-              <div class="product-card">
-                <img src="${d.image}" alt="${d.name}">
-                <h3>${d.name}</h3>
-                <p>價格：${d.price} 元</p>
-              </div>
-            `);
-          });
-        })
-        .catch(err => {
-          list.innerHTML = '<div class="empty-message">讀取資料時發生錯誤</div>';
-          console.error(err);
+    db.collection("products")
+      .where("type", "array-contains", type)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          productList.innerHTML = "<p style='text-align:center; color:#888;'>目前沒有此分類的商品</p>";
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const card = document.createElement("div");
+          card.className = "product-card";
+          card.innerHTML = `
+            <img src="${data.imageUrl}" alt="${data.name}" />
+            <h3>${data.name}</h3>
+            <p>${data.price} 元</p>
+          `;
+          productList.appendChild(card);
         });
-    }
-
-    const params = new URLSearchParams(location.search);
-    const type = params.get('type');
-    if (type) loadProducts(type);
-    else document.getElementById("product-list").innerHTML = '<div class="empty-message">請選擇分類</div>';
+      })
+      .catch((error) => {
+        productList.innerHTML = `<p style="text-align:center; color:red;">讀取商品資料錯誤：${error.message}</p>`;
+      });
   </script>
 </body>
 </html>

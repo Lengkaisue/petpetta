@@ -13,7 +13,6 @@
       background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
     }
 
-    /* 導覽列 */
     .navbar {
       width: 100%;
       background-color: #ffe0b2;
@@ -53,7 +52,6 @@
 
     .dropdown {
       position: relative;
-      display: inline-block;
     }
 
     .dropdown-content {
@@ -66,6 +64,7 @@
       padding: 0.5rem 0;
       z-index: 999;
       min-width: 160px;
+      transition: opacity 0.3s ease;
     }
 
     .dropdown-content a {
@@ -82,11 +81,6 @@
       color: #d84315;
     }
 
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
-
-    /* Hero */
     .hero {
       display: flex;
       flex-wrap: wrap;
@@ -124,7 +118,7 @@
         <a href="index.html">首頁</a>
         <div class="dropdown">
           <a href="products.html">商品總覽</a>
-           <div class="dropdown-content">
+          <div class="dropdown-content">
             <a href="products.html?type=dog">🐶 狗狗專區</a>
             <a href="products.html?type=cat">🐱 貓咪專區</a>
           </div>
@@ -150,5 +144,23 @@
   <footer>
     <p>&copy; 2025 Petpetta 寵物生活館</p>
   </footer>
+
+  <!-- 延遲關閉下拉選單 -->
+  <script>
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+      let timeout;
+
+      dropdown.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+        dropdown.querySelector('.dropdown-content').style.display = 'block';
+      });
+
+      dropdown.addEventListener('mouseleave', () => {
+        timeout = setTimeout(() => {
+          dropdown.querySelector('.dropdown-content').style.display = 'none';
+        }, 300); // 延遲 300ms 關閉
+      });
+    });
+  </script>
 </body>
 </html>

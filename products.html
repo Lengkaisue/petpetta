@@ -1,43 +1,42 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const productList = document.getElementById("product-list");
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const type = urlParams.get("type");
-
-  if (!type) {
-    productList.innerHTML = '<div class="empty-message">請從首頁選擇分類進入</div>';
-  } else {
-    const productRef = collection(db, "products", type, "products");
-
-    const querySnapshot = await getDocs(productRef);
-    if (querySnapshot.empty) {
-      productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
-    } else {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${data.image}" alt="${data.name}" />
-          <h3>${data.name}</h3>
-          <p>價格：${data.price} 元</p>
-        `;
-        productList.appendChild(card);
-      });
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petpetta 商品列表</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8e1;
+      margin: 0;
     }
-  }
-</script>
+    header {
+      padding: 1rem;
+      background: #ffe0b2;
+      text-align: center;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      margin: 0 1rem;
+      font-weight: bold;
+      color: #5b341b;
+    }
+    nav a:hover {
+      color: #d84315;
+    }
+    #button-bar {
+      text-align: center;
+      padding: 1rem;
+    }
+    button {
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffd180;
+      cursor: pointer;

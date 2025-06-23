@@ -3,81 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petpetta 商品列表</title>
+  <title>Petpetta 首頁</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <style>/* 省略原本 CSS ... */</style>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
+    }
+
+    /* 導覽列 */
+    .navbar {
+      width: 100%;
+      background-color: #ffe0b2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+    }
+
+    .nav-logo h1 {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 1.8rem;
+      color: #d84315;
+      margin: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #5b341b;
+      font-size: 1.05rem;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: #d84315;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 2rem;
+      left: 0;
+      background-color: #fff8e1;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+      padding: 0.5rem 0;
+      z-index: 999;
+      min-width: 160px;
+    }
+
+    .dropdown-content a {
+      display: block;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      color: #5b341b;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #ffe0b2;
+      color: #d84315;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      background-color: #fff8e1;
+      background-image: url('https://cdn.pixabay.com/photo/2016/04/01/09/11/paw-1300299_1280.png');
+      background-size: 120px;
+      background-repeat: repeat;
+    }
+
+    .hero img {
+      width: 100%;
+      max-width: 800px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6d4c41;
+      padding: 2rem 1rem;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1 id="page-title">Petpetta 商品分類</h1>
-    <nav><a href="index.html">回首頁</a></nav>
+    <div class="navbar">
+      <div class="nav-logo">
+        <h1>Petpetta</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">首頁</a>
+        <div class="dropdown">
+          <a href="products.html">商品總覽</a>
+          <div class="dropdown-content">
+            <a href="products.html?type=dog">🐶 狗狗專區</a>
+            <a href="products.html?type=cat">🐱 貓咪專區</a>
+          </div>
+        </div>
+        <a href="news.html">最新消息</a>
+        <a href="about.html">關於我們</a>
+        <div class="dropdown">
+          <a href="login.html">會員中心</a>
+          <div class="dropdown-content">
+            <a href="login.html">登入 / 註冊</a>
+            <a href="orders.html">我的訂單</a>
+          </div>
+        </div>
+        <a href="cart.html">購物車</a>
+      </nav>
+    </div>
   </header>
 
-  <section id="button-bar" style="text-align:center; padding:1rem;">
-    <!-- 動態產生分類按鈕 -->
+  <section class="hero">
+    <img src="assets/hero-final-illustration616.png" alt="Petpetta Hero 圖" />
   </section>
 
-  <section class="product-grid" id="product-list"></section>
-
-  <footer><p>&copy; 2025 Petpetta 寵物生活館</p></footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-
-    const firebaseConfig = { /* 填入專案資訊 */ };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const productList = document.getElementById("product-list");
-    const buttonBar = document.getElementById("button-bar");
-    const pageTitle = document.getElementById("page-title");
-    const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get("type");
-
-    // 預設分類按鈕，將來也可改成從 Firestore 抓 category collection
-    const categories = [
-      { key: "狗狗專區", label: "🐶 狗狗專區" },
-      { key: "貓咪專區", label: "🐱 貓咪專區" }
-    ];
-    categories.forEach(c => {
-      const btn = document.createElement("button");
-      btn.textContent = c.label;
-      btn.style.margin = "0 0.5rem";
-      btn.addEventListener("click", () => {
-        location.search = `?type=${encodeURIComponent(c.key)}`;
-      });
-      buttonBar.appendChild(btn);
-    });
-
-    async function loadProducts(category) {
-      productList.innerHTML = "";
-      pageTitle.textContent = category ? `Petpetta｜${category}` : "Petpetta 商品分類";
-      if (!category) {
-        productList.innerHTML = '<div class="empty-message">請選擇上方分類或從首頁進入</div>';
-        return;
-      }
-
-      const querySnapshot = await getDocs(collection(db, "products", category, "products"));
-      if (querySnapshot.empty) {
-        productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
-        return;
-      }
-
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${data.image}" alt="${data.name}" />
-          <h3>${data.name}</h3>
-          <p>價格：${data.price} 元</p>
-        `;
-        productList.appendChild(card);
-      });
-    }
-
-    loadProducts(type);
-  </script>
+  <footer>
+    <p>&copy; 2025 Petpetta 寵物生活館</p>
+  </footer>
 </body>
 </html>

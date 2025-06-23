@@ -1,135 +1,43 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petpetta 商品列表</title>
-  <link rel="stylesheet" href="assets/styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #fff8e1, #ffe0b2);
-    }
-    header {
-      background-color: #fff;
-      padding: 1rem 2rem;
-      text-align: center;
-    }
-    nav {
-      margin-top: 1rem;
-    }
-    nav a {
-      margin: 0 1rem;
-      text-decoration: none;
-      color: #5b341b;
-      font-weight: bold;
-    }
-    nav a:hover {
-      color: #d84315;
-    }
-    h1 {
-      text-align: center;
-      color: #d84315;
-    }
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
-      padding: 2rem;
-    }
-    .product-card {
-      background: #fff3e0;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
-      text-align: center;
-    }
-    .product-card img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-    }
-    .product-card h3 {
-      margin: 0.5rem 0 0.2rem;
-      color: #5b341b;
-    }
-    .product-card p {
-      margin-bottom: 1rem;
-      color: #888;
-      font-size: 0.9rem;
-    }
-    .empty-message {
-      text-align: center;
-      color: #999;
-      padding: 2rem;
-      font-size: 1.1rem;
-    }
-    footer {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #6d4c41;
-      padding: 2rem 1rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Petpetta 商品分類</h1>
-    <nav>
-      <a href="index.html">回首頁</a>
-    </nav>
-  </header>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-  <section class="product-grid" id="product-list">
-    <!-- 商品資料由 Firebase 載入 -->
-  </section>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-  <footer>
-    <p>&copy; 2025 Petpetta 寵物生活館</p>
-  </footer>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const productList = document.getElementById("product-list");
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+  const urlParams = new URLSearchParams(window.location.search);
+  const type = urlParams.get("type");
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  if (!type) {
+    productList.innerHTML = '<div class="empty-message">請從首頁選擇分類進入</div>';
+  } else {
+    const productRef = collection(db, "products", type, "products");
 
-    const productList = document.getElementById("product-list");
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get("type");
-
-    if (!type) {
-      productList.innerHTML = '<div class="empty-message">請從首頁選擇分類進入</div>';
+    const querySnapshot = await getDocs(productRef);
+    if (querySnapshot.empty) {
+      productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
     } else {
-      db.collection("products").where("type", "==", type).get().then((querySnapshot) => {
-        if (querySnapshot.empty) {
-          productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
-          return;
-        }
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const card = document.createElement("div");
-          card.className = "product-card";
-          card.innerHTML = `
-            <img src="${data.imageUrl}" alt="${data.name}" />
-            <h3>${data.name}</h3>
-            <p>${data.category}</p>
-          `;
-          productList.appendChild(card);
-        });
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${data.image}" alt="${data.name}" />
+          <h3>${data.name}</h3>
+          <p>價格：${data.price} 元</p>
+        `;
+        productList.appendChild(card);
       });
     }
-  </script>
-</body>
-</html>
+  }
+</script>

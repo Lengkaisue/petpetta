@@ -84,6 +84,8 @@
   <section id="button-bar">
     <button onclick="switchCategory('dog')">🐶 狗狗專區</button>
     <button onclick="switchCategory('cat')">🐱 貓咪專區</button>
+    <button onclick="switchCategory('toys')">🧸 玩具</button>
+    <button onclick="switchCategory('clothes')">👕 衣著</button>
   </section>
 
   <section class="product-grid" id="product-list"></section>
@@ -92,7 +94,7 @@
     <p>&copy; 2025 Petpetta 寵物生活館</p>
   </footer>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <script>
@@ -126,14 +128,16 @@
     }
 
     function switchCategory(type) {
-      window.location.search = "?type=" + type;
+      window.location.search = "?type=" + encodeURIComponent(type);
     }
 
     function loadProducts(category) {
       pageTitle.textContent = `Petpetta｜${categoryNames[category] || "商品專區"}`;
       productList.innerHTML = "";
 
-      db.collection("products").doc(category).collection("products").get()
+      db.collection("products")
+        .where("type", "array-contains", category)
+        .get()
         .then((querySnapshot) => {
           if (querySnapshot.empty) {
             productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';

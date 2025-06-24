@@ -1,164 +1,52 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petpetta 商品分類</title>
-  <link rel="stylesheet" href="assets/styles.css" />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff8e1;
-      margin: 0;
-    }
-    header {
-      padding: 1rem;
-      background: #ffe0b2;
-      text-align: center;
-    }
-    nav {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    nav a {
-      text-decoration: none;
-      margin: 0 1rem;
-      font-weight: bold;
-      color: #5b341b;
-    }
-    nav a:hover {
-      color: #d84315;
-    }
-    #button-bar {
-      text-align: center;
-      padding: 1rem;
-    }
-    button {
-      margin: 0 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #ffd180;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      padding: 1rem 2rem;
-    }
-    .product-card {
-      background: #fff3e0;
-      padding: 1rem;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .product-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    .product-card h3 {
-      margin-top: 0.5rem;
-      color: #5b341b;
-    }
-    .empty-message {
-      text-align: center;
-      color: #999;
-      padding: 2rem;
-      font-size: 1.1rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1 id="page-title">Petpetta 商品專區</h1>
-    <nav>
-      <a href="index.html">回首頁</a>
-    </nav>
-  </header>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
+    authDomain: "petpetta.firebaseapp.com",
+    projectId: "petpetta",
+    storageBucket: "petpetta.appspot.com",
+    messagingSenderId: "1094013665549",
+    appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  <section id="button-bar">
-    <button onclick="switchCategory('dog')">🐶 狗狗專區</button>
-    <button onclick="switchCategory('cat')">🐱 貓咪專區</button>
-  </section>
+  const productList = document.getElementById("product-list");
+  const pageTitle = document.getElementById("page-title");
 
-  <section class="product-grid" id="product-list"></section>
+  const urlParams = new URLSearchParams(window.location.search);
+  const type = urlParams.get("type") || "dog"; // 預設為 dog
 
-  <footer style="text-align:center; padding: 1rem;">
-    <p>&copy; 2025 Petpetta 寵物生活館</p>
-  </footer>
+  loadProducts(type);
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
-      authDomain: "petpetta.firebaseapp.com",
-      projectId: "petpetta",
-      storageBucket: "petpetta.appspot.com",
-      messagingSenderId: "1094013665549",
-      appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const productList = document.getElementById("product-list");
-    const pageTitle = document.getElementById("page-title");
-
+  function loadProducts(category) {
     const categoryNames = {
       dog: "🐶 狗狗專區",
       cat: "🐱 貓咪專區",
-      toys: "🧸 玩具專區",
-      clothes: "👕 衣著專區"
     };
+    pageTitle.textContent = "Petpetta｜" + (categoryNames[category] || "商品專區");
+    productList.innerHTML = "";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get("type");
+    db.collection("products").doc(category).collection("products").get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          productList.innerHTML = "<p class='empty-message'>目前此分類尚無商品</p>";
+          return;
+        }
 
-    if (type) {
-      loadProducts(type);
-    }
-
-    function switchCategory(type) {
-      window.location.search = "?type=" + encodeURIComponent(type);
-    }
-
-    function loadProducts(category) {
-      pageTitle.textContent = `Petpetta｜${categoryNames[category] || "商品專區"}`;
-      productList.innerHTML = "";
-
-      db.collection("products")
-        .where("type", "array-contains", category)
-        .get()
-        .then((querySnapshot) => {
-          if (querySnapshot.empty) {
-            productList.innerHTML = '<div class="empty-message">目前此分類尚無商品</div>';
-            return;
-          }
-
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-              <img src="${data.image}" alt="${data.name}" />
-              <h3>${data.name}</h3>
-              <p>價格：${data.price} 元</p>
-            `;
-            productList.appendChild(card);
-          });
-        })
-        .catch((error) => {
-          console.error("載入失敗：", error);
-          productList.innerHTML = '<div class="empty-message">讀取資料時發生錯誤</div>';
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const card = document.createElement("div");
+          card.className = "product-card";
+          card.innerHTML = `
+            <img src="${data.image}" alt="${data.name}" />
+            <h3>${data.name}</h3>
+            <p>價格：${data.price} 元</p>
+          `;
+          productList.appendChild(card);
         });
-    }
-  </script>
-</body>
-</html>
+      })
+      .catch((error) => {
+        productList.innerHTML = "<p class='empty-message'>資料載入失敗：" + error.message + "</p>";
+      });
+  }
+</script>

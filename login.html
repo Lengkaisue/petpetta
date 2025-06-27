@@ -2,128 +2,90 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Petpetta 會員登入 / 註冊</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petpetta 會員登入</title>
+  <link rel="stylesheet" href="assets/styles.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #fff8e1;
+      background: #fff8e1;
       margin: 0;
       padding: 2rem;
     }
-    h1 {
-      text-align: center;
-      color: #d84315;
-    }
-    .form-container {
+    .login-container {
       max-width: 400px;
-      margin: 2rem auto;
+      margin: 0 auto;
       padding: 2rem;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+    h2 {
+      text-align: center;
+      color: #d84315;
+    }
     input {
       width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
       border-radius: 8px;
+      border: 1px solid #ccc;
     }
     button {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.75rem;
       background-color: #ffd180;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
     }
-    .switch {
+    .message {
       text-align: center;
       margin-top: 1rem;
-    }
-    .switch a {
-      color: #d84315;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .error-message {
       color: red;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
-
-<h1>會員登入 / 註冊</h1>
-<div class="form-container">
-  <div id="error" class="error-message"></div>
-  
-  <input type="email" id="email" placeholder="電子郵件">
-  <input type="password" id="password" placeholder="密碼">
-
-  <button id="login-btn">登入</button>
-  <button id="signup-btn" style="display:none;">註冊</button>
-
-  <div class="switch">
-    <span id="switch-to-signup">尚未註冊？<a>點我註冊</a></span>
-    <span id="switch-to-login" style="display:none;">已有帳號？<a>點我登入</a></span>
+  <div class="login-container">
+    <h2>會員登入</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="密碼">
+    <button onclick="login()">登入</button>
+    <div class="message" id="message"></div>
+    <p style="text-align:center; margin-top:1rem;">
+      還沒有帳號？<a href="register.html">點我註冊</a>
+    </p>
   </div>
-</div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
-    authDomain: "petpetta.firebaseapp.com",
-    projectId: "petpetta",
-    storageBucket: "petpetta.appspot.com",
-    messagingSenderId: "1094013665549",
-    appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
+      authDomain: "petpetta.firebaseapp.com",
+      projectId: "petpetta",
+      storageBucket: "petpetta.appspot.com",
+      messagingSenderId: "1094013665549",
+      appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-  const emailEl = document.getElementById("email");
-  const passwordEl = document.getElementById("password");
-  const errorEl = document.getElementById("error");
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
 
-  const loginBtn = document.getElementById("login-btn");
-  const signupBtn = document.getElementById("signup-btn");
-  const switchToSignup = document.getElementById("switch-to-signup");
-  const switchToLogin = document.getElementById("switch-to-login");
-
-  loginBtn.onclick = () => {
-    errorEl.textContent = "";
-    auth.signInWithEmailAndPassword(emailEl.value, passwordEl.value)
-      .then(() => window.location.href = "orders.html")
-      .catch(err => errorEl.textContent = err.message);
-  };
-
-  signupBtn.onclick = () => {
-    errorEl.textContent = "";
-    auth.createUserWithEmailAndPassword(emailEl.value, passwordEl.value)
-      .then(() => window.location.href = "index.html")
-      .catch(err => errorEl.textContent = err.message);
-  };
-
-  switchToSignup.onclick = () => {
-    loginBtn.style.display = "none";
-    signupBtn.style.display = "block";
-    switchToSignup.style.display = "none";
-    switchToLogin.style.display = "block";
-  };
-
-  switchToLogin.onclick = () => {
-    signupBtn.style.display = "none";
-    loginBtn.style.display = "block";
-    switchToSignup.style.display = "block";
-    switchToLogin.style.display = "none";
-  };
-</script>
-
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          window.location.href = "orders.html";
+        })
+        .catch((error) => {
+          messageEl.textContent = "登入失敗：" + error.message;
+        });
+    }
+  </script>
 </body>
 </html>

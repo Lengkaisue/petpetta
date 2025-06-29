@@ -113,7 +113,6 @@
       color: #6d4c41;
     }
 
-    /* Responsive tweak */
     @media (max-width: 600px) {
       .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -156,11 +155,13 @@
     const pageTitle = document.getElementById("page-title");
 
     const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get("type") || "dog";
+    const typeParam = urlParams.get("type");
+    const validTypes = ["dog", "cat"];
+    const type = validTypes.includes(typeParam) ? typeParam : "dog";
 
     const categoryNames = {
       dog: "🐶 狗狗專區",
-      cat: "🐱 貓咪專區",
+      cat: "🐱 貓咪專區"
     };
 
     loadProducts(type);

@@ -44,13 +44,13 @@
     }
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      padding: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
     }
     .product-card {
       background: #fff;
-      padding: 1rem;
+      padding: 0.8rem;
       border-radius: 12px;
       text-align: center;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -112,6 +112,13 @@
       font-size: 0.9rem;
       color: #6d4c41;
     }
+
+    /* Responsive tweak */
+    @media (max-width: 600px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
@@ -123,6 +130,8 @@
     <a href="index.html">🏠 回首頁</a>
     <a href="products.html?type=dog">🐶 狗狗</a>
     <a href="products.html?type=cat">🐱 貓咪</a>
+    <a href="products.html?type=toys">🧸 玩具</a>
+    <a href="products.html?type=clothes">👕 衣著</a>
   </nav>
 
   <section class="product-grid" id="product-list">
@@ -154,8 +163,6 @@
     const categoryNames = {
       dog: "🐶 狗狗專區",
       cat: "🐱 貓咪專區",
-      toys: "🧸 玩具專區",
-      clothes: "👕 衣著專區"
     };
 
     loadProducts(type);

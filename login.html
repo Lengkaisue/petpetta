@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Petpetta 會員登入</title>
-  <link rel="stylesheet" href="assets/styles.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -45,6 +44,17 @@
       margin-top: 1rem;
       color: red;
     }
+    .link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .link a {
+      color: #d84315;
+      text-decoration: none;
+    }
+    .link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -54,9 +64,10 @@
     <input type="password" id="password" placeholder="密碼">
     <button onclick="login()">登入</button>
     <div class="message" id="message"></div>
-    <p style="text-align:center; margin-top:1rem;">
-      還沒有帳號？<a href="register.html">點我註冊</a>
-    </p>
+    <div class="link">
+      還沒有帳號？<a href="register.html">前往註冊</a><br />
+      🔙 <a href="index.html">回首頁</a>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
@@ -80,7 +91,8 @@
 
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          window.location.href = "orders.html";
+          alert("登入成功！");
+          window.location.href = "index.html"; // 登入後導回首頁
         })
         .catch((error) => {
           messageEl.textContent = "登入失敗：" + error.message;

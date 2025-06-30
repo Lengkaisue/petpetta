@@ -3,64 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Petpetta｜會員註冊</title>
-  <link rel="stylesheet" href="assets/styles.css" />
+  <title>Petpetta | 會員註冊</title>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff8e1;
       margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 0;
+      background: #fff8e1;
+      font-family: 'Segoe UI', sans-serif;
     }
-    .register-container {
-      background: #ffffff;
+    .container {
+      max-width: 400px;
+      margin: 100px auto;
+      background: white;
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 300px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       text-align: center;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      color: #5b341b;
     }
     input {
       width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border-radius: 8px;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
     }
     button {
       width: 100%;
-      padding: 0.6rem;
-      margin-top: 1rem;
-      background-color: #ffb74d;
+      padding: 0.8rem;
+      background: #ffb74d;
       color: white;
+      font-size: 1rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-weight: bold;
+    }
+    button:hover {
+      background: #ff9800;
     }
     .link {
       margin-top: 1rem;
       display: block;
       font-size: 0.9rem;
+      color: #333;
+    }
+    .link a {
+      color: #d84315;
+      text-decoration: none;
+    }
+    .link a:hover {
+      text-decoration: underline;
     }
   </style>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <div class="register-container">
+  <div class="container">
     <h2>會員註冊</h2>
-    <input type="email" id="email" placeholder="電子信箱" />
-    <input type="password" id="password" placeholder="密碼" />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="密碼（至少6位）" required />
     <button onclick="register()">註冊</button>
-    <a href="login.html" class="link">已有帳號？返回登入</a>
+    <div class="link">
+      已有帳號？<a href="login.html">返回登入</a><br />
+      🔙 <a href="index.html">回首頁</a>
+    </div>
   </div>
 
   <script>
+    // Firebase 初始化
     const firebaseConfig = {
       apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
       authDomain: "petpetta.firebaseapp.com",
@@ -70,19 +87,23 @@
       appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
     };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
 
     function register() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("註冊成功，請登入！");
-          window.location.href = "login.html";
+      if (!email || !password) {
+        alert("請輸入 Email 與密碼");
+        return;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("註冊成功，歡迎加入 Petpetta！");
+          window.location.href = "index.html";
         })
         .catch((error) => {
-          alert("註冊失敗：" + error.message);
+          alert("註冊失敗：\n" + error.message);
         });
     }
   </script>

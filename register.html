@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Petpetta 會員註冊</title>
+  <title>Petpetta | 會員註冊</title>
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
     body {
@@ -34,7 +34,7 @@
     button {
       width: 100%;
       padding: 0.75rem;
-      background-color: #ffb74d;
+      background-color: #ffd180;
       border: none;
       border-radius: 8px;
       font-weight: bold;
@@ -45,15 +45,6 @@
       margin-top: 1rem;
       color: red;
     }
-    .link {
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .link a {
-      color: #d84315;
-      text-decoration: none;
-      margin: 0 0.5rem;
-    }
   </style>
 </head>
 <body>
@@ -63,9 +54,10 @@
     <input type="password" id="password" placeholder="密碼">
     <button onclick="register()">註冊</button>
     <div class="message" id="message"></div>
-    <div class="link">
-      已有帳號？<a href="login.html">前往登入</a> | <a href="index.html">回首頁</a>
-    </div>
+    <p style="text-align:center; margin-top:1rem;">
+      已有帳號？<a href="login.html">前往登入</a><br>
+      🔙 <a href="index.html">回首頁</a>
+    </p>
   </div>
 
   <!-- Firebase SDK -->
@@ -83,25 +75,17 @@
     firebase.initializeApp(firebaseConfig);
 
     function register() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const msg = document.getElementById("message");
-
-      if (!email || !password) {
-        msg.textContent = "請填寫 Email 和密碼";
-        return;
-      }
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const messageEl = document.getElementById('message');
 
       firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          msg.style.color = "green";
-          msg.textContent = "註冊成功，將自動跳轉...";
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1500);
+          alert("註冊成功！");
+          window.location.href = "login.html";
         })
         .catch((error) => {
-          msg.textContent = "註冊失敗：" + error.message;
+          messageEl.textContent = "註冊失敗：" + error.message;
         });
     }
   </script>

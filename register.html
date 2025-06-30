@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Petpetta | 會員註冊</title>
+  <title>Petpetta | 會員登入</title>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -66,29 +66,28 @@
 </head>
 <body>
   <div class="container">
-    <h2>會員註冊</h2>
+    <h2>會員登入</h2>
     <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="密碼（至少6位）" required />
-    <button onclick="register()">註冊</button>
+    <input type="password" id="password" placeholder="密碼" required />
+    <button onclick="login()">登入</button>
     <div class="link">
-      已有帳號？<a href="login.html">返回登入</a><br />
+      還沒有帳號？<a href="register.html">前往註冊</a><br />
       🔙 <a href="index.html">回首頁</a>
     </div>
   </div>
 
   <script>
-    // Firebase 初始化
     const firebaseConfig = {
-      apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
+      apiKey: "AlzaSyC0FPrrHNJQkI6haNL_UQ6xga5YNByFAKI",
       authDomain: "petpetta.firebaseapp.com",
       projectId: "petpetta",
       storageBucket: "petpetta.appspot.com",
-      messagingSenderId: "1094013665549",
-      appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
+      messagingSenderId: "409501614193",
+      appId: "請替換為你專案中的完整 appId" // ⚠️ 請從 Firebase 設定頁完整複製貼上
     };
     firebase.initializeApp(firebaseConfig);
 
-    function register() {
+    function login() {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
@@ -97,13 +96,13 @@
         return;
       }
 
-      firebase.auth().createUserWithEmailAndPassword(email, password)
+      firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          alert("註冊成功，歡迎加入 Petpetta！");
+          alert("登入成功！");
           window.location.href = "index.html";
         })
         .catch((error) => {
-          alert("註冊失敗：\n" + error.message);
+          alert("登入失敗：\n" + error.message);
         });
     }
   </script>

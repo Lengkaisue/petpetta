@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Petpetta 會員登入</title>
+  <link rel="stylesheet" href="assets/styles.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -51,9 +52,7 @@
     .link a {
       color: #d84315;
       text-decoration: none;
-    }
-    .link a:hover {
-      text-decoration: underline;
+      margin: 0 0.5rem;
     }
   </style>
 </head>
@@ -65,8 +64,7 @@
     <button onclick="login()">登入</button>
     <div class="message" id="message"></div>
     <div class="link">
-      還沒有帳號？<a href="register.html">前往註冊</a><br />
-      🔙 <a href="index.html">回首頁</a>
+      還沒有帳號？<a href="register.html">前往註冊</a> | <a href="index.html">回首頁</a>
     </div>
   </div>
 
@@ -85,17 +83,25 @@
     firebase.initializeApp(firebaseConfig);
 
     function login() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const messageEl = document.getElementById('message');
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msg = document.getElementById("message");
+
+      if (!email || !password) {
+        msg.textContent = "請填寫 Email 和密碼";
+        return;
+      }
 
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          alert("登入成功！");
-          window.location.href = "index.html"; // 登入後導回首頁
+          msg.style.color = "green";
+          msg.textContent = "登入成功，跳轉中...";
+          setTimeout(() => {
+            window.location.href = "orders.html"; // 可換成你的會員中心頁
+          }, 1500);
         })
         .catch((error) => {
-          messageEl.textContent = "登入失敗：" + error.message;
+          msg.textContent = "登入失敗：" + error.message;
         });
     }
   </script>

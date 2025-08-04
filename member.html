@@ -1,92 +1,85 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Petpetta 會員中心</title>
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>會員中心 | Petpetta</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #fffde7;
-      margin: 0;
+      background: #fff8e1;
       padding: 2rem;
     }
-    .member-container {
+    .container {
       max-width: 600px;
-      margin: auto;
-      background: #fff;
-      border-radius: 16px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       padding: 2rem;
     }
     h2 {
       text-align: center;
-      color: #ff6f00;
+      color: #d84315;
     }
     label {
       display: block;
-      margin: 1rem 0 0.25rem;
+      margin-top: 1rem;
       font-weight: bold;
     }
     input {
       width: 100%;
       padding: 0.5rem;
-      border-radius: 8px;
+      margin-top: 0.3rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
-    .btn-group {
-      margin-top: 2rem;
-      text-align: center;
-    }
-    button {
-      padding: 0.75rem 1.5rem;
-      margin: 0.5rem;
+    .btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background-color: #ffd180;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
+      width: 100%;
     }
-    .save-btn {
-      background-color: #4caf50;
-      color: white;
-    }
-    .logout-btn {
-      background-color: #f44336;
-      color: white;
-    }
-    .message {
+    .msg {
       text-align: center;
       margin-top: 1rem;
       color: green;
     }
+    .readonly input {
+      border: none;
+      background: #f9f9f9;
+    }
+    .bottom-link {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .bottom-link a {
+      color: #d84315;
+      text-decoration: none;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div class="member-container">
-    <h2>會員資料</h2>
-    <form id="member-form">
-      <label for="name">姓名 *</label>
-      <input type="text" id="name" required>
-
-      <label for="phone">電話 *</label>
-      <input type="tel" id="phone" required>
-
-      <label for="address">地址 *</label>
-      <input type="text" id="address" required>
-
-      <label for="email">Email（登入帳號）</label>
-      <input type="email" id="email" disabled>
-
-      <label for="birthday">出生年月日</label>
-      <input type="date" id="birthday">
-    </form>
-
-    <div class="btn-group">
-      <button class="save-btn" onclick="saveProfile()">儲存資料</button>
-      <button class="logout-btn" onclick="logout()">登出</button>
+  <div class="container">
+    <h2>會員中心</h2>
+    <div id="form" class="readonly">
+      <label>姓名<input type="text" id="name" disabled></label>
+      <label>電話（必填）<input type="text" id="phone" disabled required></label>
+      <label>地址<input type="text" id="address" disabled></label>
+      <label>出生年月日<input type="date" id="birth" disabled></label>
+      <label>Email<input type="email" id="email" disabled></label>
+      <button class="btn" id="saveBtn" style="display:none">儲存</button>
+      <button class="btn" id="editBtn">編輯</button>
     </div>
-    <div class="message" id="message"></div>
+    <div class="msg" id="message"></div>
+    <div class="bottom-link">
+      <a href="index.html">← 返回首頁</a>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
@@ -104,62 +97,84 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const auth = firebase.auth();
 
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const addressInput = document.getElementById("address");
+    const birthInput = document.getElementById("birth");
+    const emailInput = document.getElementById("email");
+    const saveBtn = document.getElementById("saveBtn");
+    const editBtn = document.getElementById("editBtn");
     const msg = document.getElementById("message");
+    const form = document.getElementById("form");
 
-    auth.onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
-      } else {
-        document.getElementById("email").value = user.email;
-        loadProfile(user.uid);
+        return;
       }
-    });
+      emailInput.value = user.email;
+      const docRef = db.collection("members").doc(user.uid);
 
-    function loadProfile(uid) {
-      db.collection("users").doc(uid).get().then(doc => {
+      docRef.get().then(doc => {
         if (doc.exists) {
           const data = doc.data();
-          document.getElementById("name").value = data.name || "";
-          document.getElementById("phone").value = data.phone || "";
-          document.getElementById("address").value = data.address || "";
-          document.getElementById("birthday").value = data.birthday || "";
+          nameInput.value = data.name || "";
+          phoneInput.value = data.phone || "";
+          addressInput.value = data.address || "";
+          birthInput.value = data.birth || "";
+        } else {
+          // 新用戶預設可編輯
+          enableEditMode();
         }
       });
+    });
+
+    function enableEditMode() {
+      form.classList.remove("readonly");
+      nameInput.disabled = false;
+      phoneInput.disabled = false;
+      addressInput.disabled = false;
+      birthInput.disabled = false;
+      saveBtn.style.display = "block";
+      editBtn.style.display = "none";
     }
 
-    function saveProfile() {
-      const user = auth.currentUser;
-      if (!user) return;
+    function disableEditMode() {
+      form.classList.add("readonly");
+      nameInput.disabled = true;
+      phoneInput.disabled = true;
+      addressInput.disabled = true;
+      birthInput.disabled = true;
+      saveBtn.style.display = "none";
+      editBtn.style.display = "block";
+    }
 
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const address = document.getElementById("address").value.trim();
-      const birthday = document.getElementById("birthday").value;
+    editBtn.addEventListener("click", enableEditMode);
 
-      if (!name || !phone || !address) {
+    saveBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const address = addressInput.value.trim();
+      const birth = birthInput.value;
+
+      if (!phone) {
         msg.style.color = "red";
-        msg.textContent = "請填寫所有必填欄位。";
+        msg.textContent = "請輸入電話！";
         return;
       }
 
-      db.collection("users").doc(user.uid).set({
-        name, phone, address, birthday
-      }).then(() => {
-        msg.style.color = "green";
-        msg.textContent = "資料已儲存成功。";
-      }).catch(err => {
-        msg.style.color = "red";
-        msg.textContent = "儲存失敗：" + err.message;
-      });
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "login.html";
-      });
-    }
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("members").doc(user.uid).set({
+          name, phone, address, birth, email: user.email
+        }).then(() => {
+          msg.style.color = "green";
+          msg.textContent = "儲存成功 ✅";
+          disableEditMode();
+        });
+      }
+    });
   </script>
 </body>
 </html>

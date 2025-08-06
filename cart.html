@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購物車 | Petpetta</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8e1;
+      padding: 1rem;
+    }
+    h1 {
+      text-align: center;
+      color: #d84315;
+    }
+    .cart-item {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .controls button {
+      padding: 0.3rem 0.6rem;
+      margin: 0 0.3rem;
+      border: none;
+      background-color: #ffd180;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    select, button.checkout {
+      padding: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .total {
+      text-align: right;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .btns {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .btns a, .btns button {
+      padding: 0.75rem 1rem;
+      background-color: #ffd180;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #000;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>購物車</h1>
+  <div id="cart"></div>
+  <div class="total" id="total"></div>
+  <label for="shipping">選擇取貨超商：</label>
+  <select id="shipping">
+    <option>7-11</option>
+    <option>全家</option>
+    <option>萊爾富</option>
+    <option>OK超商</option>
+  </select>
+  <div class="btns">
+    <a href="products.html">← 返回商品</a>
+    <button class="checkout">前往結帳（串接預留）</button>
+  </div>
 
+  <script>
+    function renderCart() {
+      const cartContainer = document.getElementById('cart');
+      const totalDisplay = document.getElementById('total');
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cartContainer.innerHTML = '';
+      let total = 0;
+      cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <h3>${item.name}</h3>
+          <p>單價：$${item.price}</p>
+          <div class="controls">
+            數量：
+            <button onclick="changeQty(${index}, -1)">-</button>
+            ${item.quantity}
+            <button onclick="changeQty(${index}, 1)">+</button>
+            <button onclick="removeItem(${index})">🗑</button>
+          </div>
+          <p>小計：$${subtotal}</p>
+        `;
+        cartContainer.appendChild(div);
+      });
+      totalDisplay.textContent = `總金額：$${total}`;
+    }
+
+    function changeQty(index, delta) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(index) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

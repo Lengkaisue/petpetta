@@ -4,16 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>會員中心 | Petpetta</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #fff8e1;
-      padding: 2rem;
+      margin: 0;
+      padding: 0;
     }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background-color: #ffe0b2;
+    }
+    .header a {
+      color: #d84315;
+      text-decoration: none;
+      font-size: 1.8rem;
+    }
+    .material-icons {
+      vertical-align: middle;
+    }
+
     .container {
       max-width: 600px;
-      margin: 0 auto;
+      margin: 2rem auto;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -23,6 +40,7 @@
     h2 {
       text-align: center;
       color: #d84315;
+      margin-top: 0;
     }
     label {
       display: block;
@@ -36,55 +54,66 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+    .btn-save {
+      margin-top: 2rem;
+      padding: 0.75rem;
+      background-color: #ffd180;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      display: none;
+    }
     .msg {
       text-align: center;
       margin-top: 1rem;
       color: green;
+      font-weight: bold;
     }
     .readonly input {
       border: none;
       background: #f9f9f9;
     }
-    .bottom-link {
-      text-align: center;
-      margin-top: 2rem;
-    }
-    .bottom-link a {
-      color: #d84315;
-      text-decoration: none;
-      font-weight: bold;
-    }
     .edit-icon {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.2rem;
+      top: 1.5rem;
+      right: 1.5rem;
       cursor: pointer;
       color: #d84315;
+      font-size: 24px;
     }
   </style>
 </head>
 <body>
+
+  <div class="header">
+    <a href="index.html" title="回首頁">
+      <span class="material-icons">home</span>
+    </a>
+  </div>
+
   <div class="container">
-    <i class="fas fa-pen edit-icon" id="editIcon" title="編輯"></i>
     <h2>會員中心</h2>
+    <span id="editBtn" class="material-icons edit-icon" title="編輯">edit</span>
+
     <div id="form" class="readonly">
       <label>姓名<input type="text" id="name" disabled></label>
       <label>電話（必填）<input type="text" id="phone" disabled required></label>
       <label>地址<input type="text" id="address" disabled></label>
       <label>出生年月日<input type="date" id="birth" disabled></label>
       <label>Email<input type="email" id="email" disabled></label>
+      <button class="btn-save" id="saveBtn">儲存</button>
     </div>
+
     <div class="msg" id="message"></div>
-    <div class="bottom-link">
-      <a href="index.html">← 返回首頁</a>
-    </div>
   </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCOFPrrHNjQkI6haNL_UQ6xga5YNByFAKI",
@@ -102,19 +131,17 @@
     const addressInput = document.getElementById("address");
     const birthInput = document.getElementById("birth");
     const emailInput = document.getElementById("email");
+    const saveBtn = document.getElementById("saveBtn");
+    const editBtn = document.getElementById("editBtn");
     const msg = document.getElementById("message");
     const form = document.getElementById("form");
-    const editIcon = document.getElementById("editIcon");
-
-    let isEditing = false;
-    let currentUser = null;
 
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
         return;
       }
-      currentUser = user;
+
       emailInput.value = user.email;
       const docRef = db.collection("members").doc(user.uid);
 
@@ -126,53 +153,52 @@
           addressInput.value = data.address || "";
           birthInput.value = data.birth || "";
         } else {
-          // 新用戶預設可編輯
-          toggleEditMode(true);
+          enableEditMode();
         }
       });
     });
 
-    function toggleEditMode(enable) {
-      isEditing = enable;
-      if (enable) {
-        form.classList.remove("readonly");
-        nameInput.disabled = false;
-        phoneInput.disabled = false;
-        addressInput.disabled = false;
-        birthInput.disabled = false;
-        msg.textContent = "請填寫並再次點擊筆圖示以儲存";
-        msg.style.color = "#d84315";
-      } else {
-        form.classList.add("readonly");
-        nameInput.disabled = true;
-        phoneInput.disabled = true;
-        addressInput.disabled = true;
-        birthInput.disabled = true;
-      }
+    function enableEditMode() {
+      form.classList.remove("readonly");
+      [nameInput, phoneInput, addressInput, birthInput].forEach(input => input.disabled = false);
+      saveBtn.style.display = "block";
     }
 
-    editIcon.addEventListener("click", () => {
-      if (!isEditing) {
-        toggleEditMode(true);
-      } else {
-        // 儲存
-        const name = nameInput.value.trim();
-        const phone = phoneInput.value.trim();
-        const address = addressInput.value.trim();
-        const birth = birthInput.value;
+    function disableEditMode() {
+      form.classList.add("readonly");
+      [nameInput, phoneInput, addressInput, birthInput].forEach(input => input.disabled = true);
+      saveBtn.style.display = "none";
+    }
 
-        if (!phone) {
-          msg.style.color = "red";
-          msg.textContent = "請輸入電話！";
-          return;
-        }
+    editBtn.addEventListener("click", enableEditMode);
 
-        db.collection("members").doc(currentUser.uid).set({
-          name, phone, address, birth, email: currentUser.email
+    saveBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const address = addressInput.value.trim();
+      const birth = birthInput.value;
+
+      if (!phone) {
+        msg.style.color = "red";
+        msg.textContent = "請輸入電話！";
+        return;
+      }
+
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("members").doc(user.uid).set({
+          name, phone, address, birth, email: user.email
         }).then(() => {
           msg.style.color = "green";
           msg.textContent = "儲存成功 ✅";
-          toggleEditMode(false);
+          disableEditMode();
+
+          setTimeout(() => {
+            msg.textContent = "";
+          }, 2500);
+        }).catch(err => {
+          msg.style.color = "red";
+          msg.textContent = "儲存失敗：" + err.message;
         });
       }
     });

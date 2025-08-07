@@ -8,85 +8,108 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #fff8e1;
+      margin: 0;
       padding: 1rem;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      padding-bottom: 1rem;
     }
-    h1 {
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
       color: #d84315;
+      text-decoration: none;
     }
     .cart-link {
-      font-size: 1.5rem;
       text-decoration: none;
+      font-weight: bold;
       color: #d84315;
     }
     .product {
       background: #fff;
+      border-radius: 12px;
       padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin: 1rem 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .product h3 {
+      margin: 0 0 0.5rem 0;
     }
     .btn {
+      padding: 0.5rem 1rem;
       background-color: #ffd180;
       border: none;
       border-radius: 6px;
-      padding: 0.5rem 1rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 0.5rem;
     }
-    #message {
+    .toast {
       position: fixed;
-      top: 20px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: #4caf50;
+      background: #4caf50;
       color: white;
-      padding: 10px 20px;
+      padding: 0.5rem 1rem;
       border-radius: 6px;
       display: none;
+      z-index: 999;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>商品列表</h1>
-    <a class="cart-link" href="cart.html">🛒</a>
+    <a href="index.html" class="logo">← 返回首頁</a>
+    <a href="cart.html" class="cart-link">🛒 購物車</a>
   </header>
 
-  <div class="product">
-    <h3>商品A</h3>
-    <p>價格：$100</p>
-    <button class="btn" onclick="addToCart('商品A', 100)">加入購物車</button>
-  </div>
+  <div id="productList"></div>
 
-  <div class="product">
-    <h3>商品B</h3>
-    <p>價格：$200</p>
-    <button class="btn" onclick="addToCart('商品B', 200)">加入購物車</button>
-  </div>
-
-  <div id="message">✅ 已加入購物車</div>
+  <div id="toast" class="toast">已加入購物車</div>
 
   <script>
-    function addToCart(name, price) {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const index = cart.findIndex(item => item.name === name);
-      if (index > -1) {
-        cart[index].quantity += 1;
+    const products = [
+      { id: "p1", name: "寵物飼料", price: 300 },
+      { id: "p2", name: "玩具骨頭", price: 150 },
+      { id: "p3", name: "寵物洗髮精", price: 200 }
+    ];
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function addToCart(product) {
+      const index = cart.findIndex(item => item.id === product.id);
+      if (index >= 0) {
+        cart[index].qty += 1;
       } else {
-        cart.push({ name, price, quantity: 1 });
+        cart.push({ ...product, qty: 1 });
       }
-      localStorage.setItem('cart', JSON.stringify(cart));
-      const msg = document.getElementById("message");
-      msg.style.display = 'block';
-      setTimeout(() => msg.style.display = 'none', 1000);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      showToast("已加入購物車");
     }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 1000);
+    }
+
+    const list = document.getElementById("productList");
+    products.forEach(product => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <h3>${product.name}</h3>
+        <p>價格：$${product.price}</p>
+        <button class="btn" onclick='addToCart(${JSON.stringify(product)})'>加入購物車</button>
+      `;
+      list.appendChild(div);
+    });
   </script>
 </body>
 </html>

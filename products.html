@@ -2,114 +2,212 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>商品列表 | Petpetta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petpetta 商品專區</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #fff8e1;
       margin: 0;
-      padding: 1rem;
+      padding: 0;
     }
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 1rem;
-    }
-    .logo {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #d84315;
-      text-decoration: none;
-    }
-    .cart-link {
-      text-decoration: none;
-      font-weight: bold;
-      color: #d84315;
-    }
-    .product {
-      background: #fff;
-      border-radius: 12px;
+      background: #ffe0b2;
       padding: 1rem;
-      margin: 1rem 0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
     }
-    .product h3 {
-      margin: 0 0 0.5rem 0;
+    header h1 {
+      margin: 0;
+      color: #d84315;
     }
-    .btn {
-      padding: 0.5rem 1rem;
-      background-color: #ffd180;
+    nav {
+      text-align: center;
+      padding: 1rem;
+      background: #fff3e0;
+    }
+    nav a {
+      text-decoration: none;
+      margin: 0 0.7rem;
+      font-weight: bold;
+      color: #5b341b;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+    }
+    nav a:hover {
+      background-color: #ffe0b2;
+      color: #d84315;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .product-card {
+      background: #fff;
+      padding: 0.8rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .product-image {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .product-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s;
+    }
+    .product-image img:hover {
+      transform: scale(1.05);
+    }
+    .product-card h3 {
+      margin: 0.8rem 0 0.3rem;
+      color: #5b341b;
+    }
+    .product-card p {
+      margin: 0.3rem 0;
+      color: #888;
+    }
+    .add-to-cart-btn {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background-color: #ffab91;
+      color: #5b341b;
       border: none;
       border-radius: 6px;
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
     }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #4caf50;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      display: none;
-      z-index: 999;
+    .add-to-cart-btn:hover {
+      background-color: #ff7043;
+      color: #fff;
+    }
+    .empty-message {
+      text-align: center;
+      color: #999;
+      font-size: 1.1rem;
+      padding: 2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+      color: #6d4c41;
+    }
+
+    @media (max-width: 600px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <a href="index.html" class="logo">← 返回首頁</a>
-    <a href="cart.html" class="cart-link">🛒 購物車</a>
+    <h1 id="page-title">載入中...</h1>
   </header>
 
-  <div id="productList"></div>
+  <nav>
+    <a href="index.html">🏠 回首頁</a>
+    <a href="products.html?type=dog">🐶 狗狗</a>
+    <a href="products.html?type=cat">🐱 貓咪</a>
+  </nav>
 
-  <div id="toast" class="toast">已加入購物車</div>
+  <section class="product-grid" id="product-list">
+    <!-- 商品資料將由 Firebase 載入 -->
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Petpetta 寵物生活館</p>
+  </footer>
 
   <script>
-    const products = [
-      { id: "p1", name: "寵物飼料", price: 300 },
-      { id: "p2", name: "玩具骨頭", price: 150 },
-      { id: "p3", name: "寵物洗髮精", price: 200 }
-    ];
+    const firebaseConfig = {
+      apiKey: "AIzaSyBrL9y61iRSGv9bUDBQ8eRpU77MEhF5ztg",
+      authDomain: "petpetta.firebaseapp.com",
+      projectId: "petpetta",
+      storageBucket: "petpetta.appspot.com",
+      messagingSenderId: "1094013665549",
+      appId: "1:1094013665549:web:7bc52fdc3dfb674c57e64f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const productList = document.getElementById("product-list");
+    const pageTitle = document.getElementById("page-title");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get("type");
+    const validTypes = ["dog", "cat"];
+    const type = validTypes.includes(typeParam) ? typeParam : "dog";
+
+    const categoryNames = {
+      dog: "🐶 狗狗專區",
+      cat: "🐱 貓咪專區"
+    };
+
+    loadProducts(type);
+
+    function loadProducts(category) {
+      pageTitle.textContent = `Petpetta｜${categoryNames[category] || "商品專區"}`;
+      productList.innerHTML = "";
+
+      db.collection("products").doc(category).collection("products").get()
+        .then((querySnapshot) => {
+          if (querySnapshot.empty) {
+            productList.innerHTML = "<p class='empty-message'>目前此分類尚無商品</p>";
+            return;
+          }
+
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `
+              <div class="product-image">
+                <img src="${data.image}" alt="${data.name}" onerror="this.src='assets/img/no-image.png';" />
+              </div>
+              <h3>${data.name}</h3>
+              <p>${data.price} 元</p>
+              <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(data)})'>加入購物車</button>
+            `;
+            productList.appendChild(card);
+          });
+        })
+        .catch((error) => {
+          productList.innerHTML = `<p class='empty-message'>讀取資料錯誤：${error.message}</p>`;
+        });
+    }
 
     function addToCart(product) {
-      const index = cart.findIndex(item => item.id === product.id);
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const index = cart.findIndex(item => item.name === product.name);
       if (index >= 0) {
-        cart[index].qty += 1;
+        cart[index].quantity += 1;
       } else {
-        cart.push({ ...product, qty: 1 });
+        cart.push({ ...product, quantity: 1 });
       }
       localStorage.setItem("cart", JSON.stringify(cart));
-      showToast("已加入購物車");
+      alert(`${product.name} 已加入購物車！`);
     }
-
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.style.display = "block";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 1000);
-    }
-
-    const list = document.getElementById("productList");
-    products.forEach(product => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <h3>${product.name}</h3>
-        <p>價格：$${product.price}</p>
-        <button class="btn" onclick='addToCart(${JSON.stringify(product)})'>加入購物車</button>
-      `;
-      list.appendChild(div);
-    });
   </script>
 </body>
 </html>

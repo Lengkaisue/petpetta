@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>訂單管理 | Petpetta 後台</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8e1;
+      padding: 1rem;
+    }
+    h2 {
+      color: #d84315;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    th, td {
+      border: 1px solid #d84315;
+      padding: 0.5rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #ffccbc;
+    }
+    button.shipped {
+      background: #4caf50;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button.shipped:disabled {
+      background: #9e9e9e;
+      cursor: default;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .status.pending {
+      color: #ff7043;
+    }
+    .status.shipped {
+      color: #4caf50;
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+</head>
+<body>
+  <h2>Petpetta 後台訂單管理</h2>
+  <div id="orderContainer">載入中...</div>
+
+  <script>
+    // Firebase 設定 (和你購物車頁一樣)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOFPrrHNjQkI6haNL_UQ6xga5YNByFAKI",
+      authDomain: "petpetta.firebaseapp.com",
+      projectId: "petpetta",
+      storageBucket: "petpetta.firebasestorage.app",
+      messagingSenderId: "409501614193",
+      appId: "1:409501614193:web:084e5a33da7840b5235bd0",
+      measurementId: "G-KD9704QCRE"
+    };
+
+    // 初始化
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // 簡單匿名登入示範（建議改成管理員登入）
+    auth.signInAnonymously()
+      .catch(err => {
+        alert('登入失敗，請稍後再試');
+        console.error(err);
+      });
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loadOrders();
+      } else {
+        document.getElementById('orderContainer').textContent = '尚未登入';
+      }
+    });
+
+    // 取得訂單列表並渲染
+    async function loadOrders() {
+      const container = document.getElementById('orderContainer');
+      container.textContent = '載入訂單中...';
+
+      try {
+        const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
+        if (snapshot.empty) {
+          container.innerHTML = '<p>目前沒有訂單</p>';
+          return;
+        }
+
+        let html = `<table>
+          <thead>
+            <tr>
+              <th>訂單ID</th>
+              <th>商品明細</th>
+              <th>取貨超商</th>
+              <th>總金額</th>
+              <th>訂單時間</th>
+              <th>狀態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+        `;
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const id = doc.id;
+          const createdAt = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : '';
+          const status = data.status || 'pending';
+          const statusClass = status === 'shipped' ? 'shipped' : 'pending';
+
+          // 商品明細文字
+          const itemsText = data.items.map(i => `${i.name} x${i.qty} ($${i.price})`).join('<br>');
+
+          html += `
+            <tr>
+              <td>${id}</td>
+              <td>${itemsText}</td>
+              <td>${data.store || ''}</td>
+              <td>$${data.total}</td>
+              <td>${createdAt}</td>
+              <td class="status ${statusClass}">${status === 'shipped' ? '已出貨' : '待出貨'}</td>
+              <td>
+                <button class="shipped" onclick="markShipped('${id}')" ${status === 'shipped' ? 'disabled' : ''}>標記出貨</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+      } catch (error) {
+        container.textContent = '讀取訂單失敗，請稍後再試';
+        console.error(error);
+      }
+    }
+
+    // 標記訂單為已出貨
+    async function markShipped(orderId) {
+      if (!confirm('確定要標記此訂單為「已出貨」嗎？')) return;
+
+      try {
+        await db.collection('orders').doc(orderId).update({
+          status: 'shipped',
+          shippedAt: new Date()
+        });
+        alert('已標記為出貨');
+        loadOrders();
+      } catch (error) {
+        alert('更新失敗，請稍後再試');
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>

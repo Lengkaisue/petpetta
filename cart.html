@@ -70,19 +70,69 @@
       margin-top: 2rem;
       color: #888;
     }
+    .form-group {
+      margin-top: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
   </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
-    <a href="index.html" class="back">←</a>
+    <a href="index.html" class="back">🏠</a>
     <h2>購物車</h2>
   </header>
 
   <div id="cartList"></div>
   <div class="total" id="total"></div>
+
+  <!-- 收件資料 -->
+  <div class="form-group">
+    <label>收件人姓名（必填）</label>
+    <input type="text" id="receiverName" placeholder="請輸入收件人姓名">
+  </div>
+  <div class="form-group">
+    <label>聯絡電話（必填）</label>
+    <input type="tel" id="receiverPhone" placeholder="請輸入手機號碼">
+  </div>
+  <div class="form-group">
+    <label>選擇取貨超商（必填）</label>
+    <select id="store">
+      <option value="">請選擇門市</option>
+      <option value="7-11">7-11</option>
+      <option value="全家">全家</option>
+      <option value="萊爾富">萊爾富</option>
+      <option value="OK超商">OK超商</option>
+    </select>
+  </div>
+
   <button class="checkout" onclick="checkout()" id="checkoutBtn" style="display:none;">前往結帳</button>
 
   <script>
+    // Firebase 初始化
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOFPrrHNjQkI6haNL_UQ6xga5YNByFAKI",
+      authDomain: "petpetta.firebaseapp.com",
+      projectId: "petpetta",
+      storageBucket: "petpetta.firebasestorage.app",
+      messagingSenderId: "409501614193",
+      appId: "1:409501614193:web:084e5a33da7840b5235bd0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     function updateCartDisplay() {
@@ -139,9 +189,44 @@
       updateCartDisplay();
     }
 
-    function checkout() {
-      alert("結帳功能尚未開通，將支援超商取貨付款。");
-      // 預留串接金流與門市選擇功能位置
+    async function checkout() {
+      const name = document.getElementById("receiverName").value.trim();
+      const phone = document.getElementById("receiverPhone").value.trim();
+      const store = document.getElementById("store").value;
+
+      if (!name || !phone || !store) {
+        alert("請完整填寫收件資料");
+        return;
+      }
+
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("請先登入會員再結帳");
+        return;
+      }
+
+      const orderData = {
+        userId: user.uid,
+        items: cart,
+        total: cart.reduce((sum, item) => sum + item.qty * item.price, 0),
+        receiverName: name,
+        receiverPhone: phone,
+        store: store,
+        paymentMethod: "COD", // 超商取貨付款
+        status: "pending", // 待出貨
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection("orders").add(orderData);
+        alert("✅ 訂單建立成功，請於取貨時付款！");
+        localStorage.removeItem("cart");
+        cart = [];
+        updateCartDisplay();
+      } catch (error) {
+        console.error("下單失敗：", error);
+        alert("❌ 下單失敗，請稍後再試");
+      }
     }
 
     updateCartDisplay();
